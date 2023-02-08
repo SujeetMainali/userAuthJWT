@@ -1,8 +1,8 @@
 const express = require('express');
-const mongoose = require('mongoose')
-const authRoutes = require('./routes/auth_routes')
-const cookieParser = require('cookie-parser')
-
+const mongoose = require('mongoose');
+const authRoutes = require('./routes/auth_routes');
+const cookieParser = require('cookie-parser');
+const {requireAuth, checkUser} = require('./middlewares/authMiddlewares');
 const app = express();
 
 //SETTING UP STATIC FILES
@@ -23,11 +23,12 @@ mongoose.connect(dbURI,{useNewUrlParser: true, useUnifiedTopology: true,})
 .catch((err)=>console.log(err))
 
 //SETTING UP ROUTES
+app.get('*', checkUser);
 app.get('/', (req, resp) => {
     resp.render('home');
 });
 
-app.get('/products', (req, resp) => {
+app.get('/products', requireAuth,(req, resp) => {
     resp.render('products');
 });
 
